@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:dio_app/UserBloc.dart';
 import 'package:dio_app/UserResponse.dart';
+import 'package:dio_app/models/user.dart';
 
 class UserWidget extends StatefulWidget {
   @override
@@ -38,11 +39,20 @@ class _UserWidgetState extends State<UserWidget> {
     );
   }
 
+
+
   Widget _buildLoadingWidget() {
     return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text("Loading data from API..."), CircularProgressIndicator()],
+          children: [
+            Text("Loading data from API...",
+                style: Theme.of(context).textTheme.subtitle),
+            Padding(
+              padding: EdgeInsets.only(top: 5),
+            ),
+            CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),)
+          ],
         ));
   }
 
@@ -51,18 +61,45 @@ class _UserWidgetState extends State<UserWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Error occured: $error"),
+            Text("Error occured: $error", style: Theme.of(context).textTheme.subtitle),
           ],
         ));
   }
 
   Widget _buildUserWidget(UserResponse data) {
+    User  user = data.results[0];
     return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("User widget"),
+            CircleAvatar(
+              radius: 70,
+              backgroundImage: NetworkImage(user.picture.large),
+            ),
+            Text(
+              "${_capitalizeFirstLetter(user.name.first)} ${_capitalizeFirstLetter(user.name.last)}",
+              style: Theme.of(context).textTheme.title,
+            ),
+            Text(user.email, style: Theme.of(context).textTheme.subtitle),
+            Padding(
+              padding: EdgeInsets.only(top: 5),
+            ),
+            Text(user.location.street, style: Theme.of(context).textTheme.body1),
+            Padding(
+              padding: EdgeInsets.only(top: 5),
+            ),
+            Text(user.location.city, style: Theme.of(context).textTheme.body1),
+            Padding(
+              padding: EdgeInsets.only(top: 5),
+            ),
+            Text(user.location.state, style: Theme.of(context).textTheme.body1),
           ],
         ));
   }
+
+  _capitalizeFirstLetter(String text) {
+    return text.substring(0, 1).toUpperCase() + text.substring(0, text.length);
+  }
 }
+
+
